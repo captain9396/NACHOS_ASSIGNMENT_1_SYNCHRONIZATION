@@ -68,6 +68,8 @@ class Lock {
     Lock(char* debugName);  		// initialize lock to be FREE
     ~Lock();				// deallocate lock
     char* getName() { return name; }	// debugging assist
+    bool getIsHeldBySome() { return isHeldBySome; } // a private variable for the lock class to indicate whether the lock is free or busy.
+
 
     void Acquire(); // these are the only operations on a lock
     void Release(); // they are both *atomic*
@@ -80,6 +82,9 @@ class Lock {
   private:
     char* name;				// for debugging
     // plus some other stuff you'll need to define
+    bool isHeldBySome;
+    Thread* currentHolder;
+
 };
 
 // The following class defines a "condition variable".  A condition

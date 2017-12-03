@@ -24,6 +24,7 @@
 #include "copyright.h"
 #include "synch.h"
 #include "system.h"
+#include "thread.h"
 
 //----------------------------------------------------------------------
 // Semaphore::Semaphore
@@ -85,7 +86,7 @@ Semaphore::P()
 //----------------------------------------------------------------------
 
 void
-Semaphore::V()
+Semaphore::V() 
 {
     Thread *thread;
     IntStatus oldLevel = interrupt->SetLevel(IntOff);
@@ -100,10 +101,36 @@ Semaphore::V()
 // Dummy functions -- so we can compile our later assignments 
 // Note -- without a correct implementation of Condition::Wait(), 
 // the test case in the network assignment won't work!
-Lock::Lock(char* debugName) {}
+Lock::Lock(char* debugName) {
+	name = debugName;
+	isHeldBySome = false;
+}
+
+
 Lock::~Lock() {}
-void Lock::Acquire() {}
-void Lock::Release() {}
+
+
+void Lock::Acquire() {
+	
+	IntStatus oldLevel = interrupt->SetLevel(IntOff);
+	
+	if(getIsHeldBySome() == true){
+		currentThread->Sleep();	
+	}else {
+		isHeldBySome = true;
+	}
+	
+	interrupt->SetLevel(oldLevel);
+}
+
+
+
+void Lock::Release() {
+
+	IntStatus oldLevel = interrupt->SetLevel(IntOff);
+	isHeldBySome = false;
+	interrupt->SetLevel(oldLevel);
+}
 
 Condition::Condition(char* debugName) { }
 Condition::~Condition() { }
